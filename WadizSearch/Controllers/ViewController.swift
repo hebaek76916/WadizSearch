@@ -18,6 +18,18 @@ class ViewController: UIViewController {
         return searchBar
     }()
     
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(TableViewCell.self,
+                           forCellReuseIdentifier: TableViewCell.identifier)
+        tableView.register(UITableViewCell.self,
+                           forCellReuseIdentifier: "cell")
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        return tableView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -26,7 +38,7 @@ class ViewController: UIViewController {
         setupUI()
         API.search(keyword: "캠핑")
             .get { result in
-                dump(result)
+                //dump(result)
             }
     }
 
@@ -42,6 +54,17 @@ extension ViewController: UISearchBarDelegate {
     
 }
 
+extension ViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 3
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.identifier, for: indexPath) as? TableViewCell else { return UITableViewCell() }
+        return cell
+    }
+}
+
 private extension ViewController {
     
     func setupUI() {
@@ -55,6 +78,17 @@ private extension ViewController {
             searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
                                           constant: 44)
         ].forEach{ $0.isActive = true }
+        
+        tableView.backgroundColor = .red
+        view.addSubview(tableView)
+        [
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor,
+                                          constant: 14),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ].forEach{ $0.isActive = true }
+        
     }
     
 }
